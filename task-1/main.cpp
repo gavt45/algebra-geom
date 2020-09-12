@@ -52,16 +52,26 @@ public:
         convert_simple_to_trig();
     }
 
-    double get_trig_ro(){
+    double get_ro(){
         convert_simple_to_trig();
 //            return sqrt(this->a*this->a + this->b*this->b);
 //        else
         return ro;
     }
 
-    double get_trig_phi(){
+    void set_ro(double _ro){
+        ro = _ro;
+        convert_trig_to_simple();
+    }
+
+    double get_phi(){
         convert_simple_to_trig();
         return phi;
+    }
+
+    void set_phi(double _phi){
+        phi = _phi;
+        convert_trig_to_simple();
     }
 
     void multiply(int real, int imag){
@@ -100,8 +110,8 @@ public:
 
     void print_complex_trig(){
         convert_simple_to_trig();
-        double phi = this->get_trig_phi();
-        cout << setprecision(12) << this->get_trig_ro() << " * (cos(" << setprecision(12) << phi << ") + i*sin(" << setprecision(12) << phi << "))";
+        double phi = this->get_phi();
+        cout << setprecision(12) << this->get_ro() << " * (cos(" << setprecision(12) << phi << ") + i*sin(" << setprecision(12) << phi << "))";
     }
 
 private:
@@ -115,8 +125,14 @@ private:
     }
 
     void convert_simple_to_trig(){
-        ro = sqrt(this->a*this->a + this->b*this->b);
-        phi = atan(this->b/this->a);
+        if (a == 0 && b == 0)
+            ro = 0;
+        else
+            ro = sqrt(this->a*this->a + this->b*this->b);
+        if (b == 0 || a == 0)
+            phi = 0;
+        else
+            phi = atan(this->b/this->a);
 //        trig = true;
     }
 };
@@ -148,18 +164,17 @@ int main(int argc, char * argv[]){
         }
         case 1: { // print z^-1
             Complex z_inverse = Complex();
-            
-            z_inverse.set_real(z.real()/(z.real()*z.real()+z.imaginary()*z.imaginary()));
-            z_inverse.print_all();cout << endl;
-            z_inverse.set_imag(-z.imaginary()/(z.real()*z.real()+z.imaginary()*z.imaginary()));
+            if (z.real()*z.real()+z.imaginary()*z.imaginary() != 0)
+                z_inverse.set_real(z.real()/(z.real()*z.real()+z.imaginary()*z.imaginary()));
+            if (z.real()*z.real()+z.imaginary()*z.imaginary() != 0)
+                z_inverse.set_imag(-z.imaginary()/(z.real()*z.real()+z.imaginary()*z.imaginary()));
 
             z_inverse.print_all();
             cout << endl;
             break;
         }
         case 2: { // print z^n
-            Complex z1 = Complex(z.get_trig_ro(), z.get_trig_phi());
-            z1.print_all(); cout << endl;
+            Complex z1 = Complex(z.get_ro(), z.get_phi());
             cout << "Power?: ";
             int power = 1;
             cin >> power;
@@ -170,8 +185,13 @@ int main(int argc, char * argv[]){
             break;
         }
         case 3: { // print all n-th roots of z
-            double ro = z.get_trig_ro(), phi = z.get_trig_phi();
-            
+            Complex z1 = Complex(z.get_ro(), z.get_phi());
+            cout << "Root?: ";
+            double power = 1.0;
+            cin >> power;
+            z1.set_ro(pow(z1.get_ro(), 1/power));
+            z1.set_phi(z1.get_phi()/power);
+            cout << "TRIG: " << setprecision(12) << z1.get_ro() << " * (cos(" << setprecision(12) << z1.get_phi() << " + 2pi*k/" << power << ") + i*sin(" << setprecision(12) << z1.get_phi() <<  " + 2pi*k/" << power << ")) where k in [0; " << power-1 << "]";
             break;
         }
         default: {
