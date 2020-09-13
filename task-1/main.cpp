@@ -4,6 +4,8 @@
 
 #define ABS(x) ((x)>=0 ? (x):(-(x)))
 
+#define MIN_DOUBLE_VAL 1e-6
+
 using namespace std;
 
 class Complex { // a + ib
@@ -40,6 +42,7 @@ public:
     void set_real(double _a){
         a = _a;
         convert_simple_to_trig();
+//        print_all();
     }
 
     double imaginary(){
@@ -50,6 +53,7 @@ public:
     void set_imag(double _b){
         b = _b;
         convert_simple_to_trig();
+//        print_all();
     }
 
     double get_ro(){
@@ -118,7 +122,11 @@ private:
     void convert_trig_to_simple(){
 //        if (trig){
         a = ro * cos(phi);
+//        cout << "a:" << a << endl;
+        if (abs(a) < MIN_DOUBLE_VAL) a = 0;
         b = ro * sin(phi);
+//        cout << "b:" << b << endl;
+        if (abs(b) < MIN_DOUBLE_VAL) b = 0;
 //        } else {
 //            cout << "Trying to convert converted number or non trig!!!" << endl;
 //        }
@@ -128,11 +136,20 @@ private:
         if (a == 0 && b == 0)
             ro = 0;
         else
-            ro = sqrt(this->a*this->a + this->b*this->b);
-        if (b == 0 || a == 0)
+            ro = sqrt(a*a + b*b);
+        if (b != 0 && ro != 0) {
+            phi = asin(b / ro);
+            if (a < 0)
+                phi = M_PI - phi;
+        } else if (a != 0 && ro != 0) {
+            phi = acos(a / ro);
+            if (b < 0)
+                phi = 2*M_PI - phi;
+        } /*else if (a != 0 && b != 0) {
+            phi = atan(a / b);
+        }*/ else
             phi = 0;
-        else
-            phi = atan(this->b/this->a);
+//            phi = atan(b/a);
 //        trig = true;
     }
 };
@@ -152,51 +169,61 @@ int main(int argc, char * argv[]){
     cout << "Please, input a and b for z = a + ib:" << endl;
     double a,b;
     cin >> a >> b;
+    if ((abs(a) < MIN_DOUBLE_VAL && b != 0) || (abs(b) < MIN_DOUBLE_VAL && b != 0)) {
+        cout << "Coefficient is to smaller than " << MIN_DOUBLE_VAL << "! Please, recompile with another value."
+             << endl;
+        return 0;
+    }
     z.set_imag(b); z.set_real(a);
-    cout << "Please, input choice(0,1,2 or 3)" << endl;
     int choice = -1;
-    cin >> choice;
-    switch (choice){
-        case 0: { // just print out numbers
-            z.print_all();
-            cout << endl;
-            break;
-        }
-        case 1: { // print z^-1
-            Complex z_inverse = Complex();
-            if (z.real()*z.real()+z.imaginary()*z.imaginary() != 0)
-                z_inverse.set_real(z.real()/(z.real()*z.real()+z.imaginary()*z.imaginary()));
-            if (z.real()*z.real()+z.imaginary()*z.imaginary() != 0)
-                z_inverse.set_imag(-z.imaginary()/(z.real()*z.real()+z.imaginary()*z.imaginary()));
+    bool stop = false;
+    while (!stop) {
+        cout << "Please, input choice(0,1,2 or 3)" << endl << "> ";
+        cin >> choice;
+        switch (choice) {
+            case 0: { // just print out numbers
+                z.print_all();
+                cout << endl;
+                break;
+            }
+            case 1: { // print z^-1
+                Complex z_inverse = Complex();
+                if (z.real() * z.real() + z.imaginary() * z.imaginary() != 0)
+                    z_inverse.set_real(z.real() / (z.real() * z.real() + z.imaginary() * z.imaginary()));
+                if (z.real() * z.real() + z.imaginary() * z.imaginary() != 0)
+                    z_inverse.set_imag(-z.imaginary() / (z.real() * z.real() + z.imaginary() * z.imaginary()));
 
-            z_inverse.print_all();
-            cout << endl;
-            break;
-        }
-        case 2: { // print z^n
-            Complex z1 = Complex(z.get_ro(), z.get_phi());
-            cout << "Power?: ";
-            int power = 1;
-            cin >> power;
-            z1.power_trig(power);
-            cout << endl;
-            z1.print_all();
-            cout << endl;
-            break;
-        }
-        case 3: { // print all n-th roots of z
-            Complex z1 = Complex(z.get_ro(), z.get_phi());
-            cout << "Root?: ";
-            double power = 1.0;
-            cin >> power;
-            z1.set_ro(pow(z1.get_ro(), 1/power));
-            z1.set_phi(z1.get_phi()/power);
-            cout << "TRIG: " << setprecision(12) << z1.get_ro() << " * (cos(" << setprecision(12) << z1.get_phi() << " + 2pi*k/" << power << ") + i*sin(" << setprecision(12) << z1.get_phi() <<  " + 2pi*k/" << power << ")) where k in [0; " << power-1 << "]";
-            break;
-        }
-        default: {
-            cout << "Wrong choice!" << endl;
-            return -1;
+                z_inverse.print_all();
+                cout << endl;
+                break;
+            }
+            case 2: { // print z^n
+                Complex z1 = Complex(z.get_ro(), z.get_phi());
+                cout << "Power?: ";
+                int power = 1;
+                cin >> power;
+                z1.power_trig(power);
+                cout << endl;
+                z1.print_all();
+                cout << endl;
+                break;
+            }
+            case 3: { // print all n-th roots of z
+                Complex z1 = Complex(z.get_ro(), z.get_phi());
+                cout << "Root?: ";
+                double power = 1.0;
+                cin >> power;
+                z1.set_ro(pow(z1.get_ro(), 1 / power));
+                z1.set_phi(z1.get_phi() / power);
+                cout << "TRIG: " << setprecision(12) << z1.get_ro() << " * (cos(" << setprecision(12) << z1.get_phi()
+                     << " + 2pi*k/" << power << ") + i*sin(" << setprecision(12) << z1.get_phi() << " + 2pi*k/" << power
+                     << ")) where k in [0; " << power - 1 << "]";
+                break;
+            }
+            default: {
+                cout << "Wrong choice!" << endl;
+                stop = true;
+            }
         }
     }
     return 0;
