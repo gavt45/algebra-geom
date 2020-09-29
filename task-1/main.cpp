@@ -45,7 +45,7 @@ public:
 //        print_all();
     }
 
-    double imaginary(){
+    double get_imaginary(){
         convert_trig_to_simple();
         return b;
     }
@@ -137,18 +137,18 @@ private:
             ro = 0;
         else
             ro = sqrt(a*a + b*b);
-        if (b != 0 && ro != 0) {
+        if (ro != 0)
             phi = asin(b / ro);
             if (a < 0)
                 phi = M_PI - phi;
-        } else if (a != 0 && ro != 0) {
-            phi = acos(a / ro);
-            if (b < 0)
-                phi = 2*M_PI - phi;
-        } /*else if (a != 0 && b != 0) {
-            phi = atan(a / b);
-        }*/ else
-            phi = 0;
+//        if (b != 0 && ro != 0) {
+//
+//        } else if (a != 0 && ro != 0) {
+//            phi = acos(a / ro);
+//            if (b < 0)
+//                phi = 2*M_PI - phi;
+//        } else
+//            phi = 0;
 //            phi = atan(b/a);
 //        trig = true;
     }
@@ -169,7 +169,7 @@ int main(int argc, char * argv[]){
     cout << "Please, input a and b for z = a + ib:" << endl;
     double a,b;
     cin >> a >> b;
-    if ((abs(a) < MIN_DOUBLE_VAL && b != 0) || (abs(b) < MIN_DOUBLE_VAL && b != 0)) {
+    if ((abs(a) < MIN_DOUBLE_VAL && b != 0) || (abs(b) < MIN_DOUBLE_VAL && a != 0)) {
         cout << "Coefficient is to smaller than " << MIN_DOUBLE_VAL << "! Please, recompile with another value."
              << endl;
         return 0;
@@ -188,10 +188,10 @@ int main(int argc, char * argv[]){
             }
             case 1: { // print z^-1
                 Complex z_inverse = Complex();
-                if (z.real() * z.real() + z.imaginary() * z.imaginary() != 0)
-                    z_inverse.set_real(z.real() / (z.real() * z.real() + z.imaginary() * z.imaginary()));
-                if (z.real() * z.real() + z.imaginary() * z.imaginary() != 0)
-                    z_inverse.set_imag(-z.imaginary() / (z.real() * z.real() + z.imaginary() * z.imaginary()));
+                if (z.real() * z.real() + z.get_imaginary() * z.get_imaginary() != 0)
+                    z_inverse.set_real(z.real() / (z.real() * z.real() + z.get_imaginary() * z.get_imaginary()));
+                if (z.real() * z.real() + z.get_imaginary() * z.get_imaginary() != 0)
+                    z_inverse.set_imag(-z.get_imaginary() / (z.real() * z.real() + z.get_imaginary() * z.get_imaginary()));
 
                 z_inverse.print_all();
                 cout << endl;
@@ -217,7 +217,7 @@ int main(int argc, char * argv[]){
                 z1.set_phi(z1.get_phi() / power);
                 cout << "TRIG: " << setprecision(12) << z1.get_ro() << " * (cos(" << setprecision(12) << z1.get_phi()
                      << " + 2pi*k/" << power << ") + i*sin(" << setprecision(12) << z1.get_phi() << " + 2pi*k/" << power
-                     << ")) where k in [0; " << power - 1 << "]";
+                     << ")) where k in [0; " << power - 1 << "]" << endl;
                 break;
             }
             default: {
