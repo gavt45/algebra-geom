@@ -56,7 +56,7 @@ string print_vec(vector<double> &a){
 
 int main() {
     vector<vector<double>> a = {{2, 2, 2},
-                             {1, 1,  1},
+                             {0, 1,  1},
                              {-1, -1,  -1}};
 
     cout << "Please, enter vectors: " << endl;
@@ -76,19 +76,19 @@ int main() {
 
     sort(a.begin(), a.end());
 
-//    for(vector<double> v : a){
-//        cout << "Vec: " << print_vec(v) << endl;
-//    }
+    for(vector<double> v : a){
+        cout << "Vec: " << print_vec(v) << endl;
+    }
 
     for (int i = 0; i < DIMENSION; ++i) {
         for (int j = i+1; j < DIMENSION; ++j) {
-//            cout << "Vectors: " << endl;
-//            for(vector<double> v : a){
-//                cout << "Vec: " << print_vec(v) << endl;
-//            }
+            cout << "Vectors: " << endl;
+            for(vector<double> v : a){
+                cout << "Vec: " << print_vec(v) << endl;
+            }
             if (a[i][i] == 0) break;
             double coef = a[j][i]/a[i][i];
-//            cout << "Coef: " << coef << "; j: " << j << endl;
+            cout << "Coef: " << coef << "; j: " << j << endl;
             for (int k = i; k < DIMENSION; ++k) {
                 a[j][k] -= coef*a[i][k];
             }
