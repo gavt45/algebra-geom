@@ -7,11 +7,11 @@
 #include <iomanip>
 
 // Define DEBUG if you want to see verbose output
-#define DEBUG 1
+//#define DEBUG 1
 
-#ifdef DEBUG
+//#ifdef DEBUG
 #include <sstream>
-#endif
+//#endif
 
 using namespace std;
 
@@ -40,7 +40,6 @@ vector<double> sum(vector<double> a, vector<double> b, double k) {
     return s;
 }
 
-#ifdef DEBUG
 string print_vec(const vector<double> &a) {
     stringstream ss;
     for (double i : a) {
@@ -49,6 +48,7 @@ string print_vec(const vector<double> &a) {
     return ss.str();
 }
 
+#ifdef DEBUG
 void print_all(const vector<vector<double>> &arr) {
     for (const vector<double> &a : arr) {
         cout << print_vec(a) << endl;
@@ -65,7 +65,7 @@ int main() {
 //    vector<double> barr(n, 0);
 
     for (int i = 0; i < k; ++i) {
-        for (int j = 0; j < n+1; ++j) {
+        for (int j = 0; j < n; ++j) {
 //            if (j == n) cin >> barr[i];
 //            else {
                 if (i == j) back_arr[i][j] = 1;
@@ -148,13 +148,19 @@ int main() {
         cout << "vec: " << print_vec(vec) << " | " << print_vec(back_arr[i]) << endl;
         i++;
     }
+#endif
+
+
     cout << "Back arr:" << endl;
-    i = 0;
+#ifndef DEBUG
+    int i = 0;
+#else
+    i=0
+#endif
     for (const auto &vec : back_arr) {
-        cout << "vec: " << print_vec(vec) << endl;
+        cout << print_vec(vec) << endl;
         i++;
     }
-#endif
 
 //    for (int m = 0; m < n; ++m) {
 //        cout << "X_" << m << " = " << barr[m]/arr[m][m] << endl;
